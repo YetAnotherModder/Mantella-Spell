@@ -1,5 +1,4 @@
 Scriptname MantellaMCM_VisionSettings  Hidden 
-Import SUP_SKSE
 
 function Render(MantellaMCM mcm, MantellaRepository Repository) global
     ;This part of the MCM MainSettings script pretty much only serves to tell papyrus what button to display.
@@ -10,7 +9,7 @@ function Render(MantellaMCM mcm, MantellaRepository Repository) global
 endfunction
 
 function LeftColumn(MantellaMCM mcm, MantellaRepository Repository) global
-    ;if repository.currentSKversion == "1.6.640.0" || repository.currentSKversion == "1.5.97.0" || repository.currentSKversion == "1.6.659.0" ;Covers the SUP SKSE SUPPORTED VERSION
+    ;if repository.currentSKversion == "1.6.640.0" || repository.currentSKversion == "1.5.97.0" || repository.currentSKversion == "1.6.659.0" 
     
     int oid_automaticVisionAnalysis_flag = mcm.OPTION_FLAG_DISABLED
     int oid_SteamVisionAnalysis_flag = mcm.OPTION_FLAG_DISABLED
@@ -21,7 +20,7 @@ function LeftColumn(MantellaMCM mcm, MantellaRepository Repository) global
     int oid_VisionHintsHotkey_flag = mcm.OPTION_FLAG_DISABLED
     int oid_forceSkyrimVersion_flag = mcm.OPTION_FLAG_DISABLED
     int oid_allowVisionDebugMode_flag = mcm.OPTION_FLAG_DISABLED
-    if repository.allowVisionDebugMode 
+    if repository.allowVisionDebugMode  ;Force the Mantella MCM to list all options (mostly used to test for Skyrim VR thru desktop)
         oid_automaticVisionAnalysis_flag = mcm.OPTION_FLAG_NONE
         oid_SteamVisionAnalysis_flag = mcm.OPTION_FLAG_NONE
         oid_steamScreenshotDelay_flag = mcm.OPTION_FLAG_NONE
@@ -31,7 +30,7 @@ function LeftColumn(MantellaMCM mcm, MantellaRepository Repository) global
         oid_VisionHintsHotkey_flag = mcm.OPTION_FLAG_NONE
         oid_forceSkyrimVersion_flag = mcm.OPTION_FLAG_NONE
         oid_allowVisionDebugMode_flag = mcm.OPTION_FLAG_NONE
-    elseif repository.currentSKversion == "1.4.15.0"
+    elseif repository.currentSKversion == "1.4.15.0" ;Checks if Skyrim VR and lists options accordingly
         oid_automaticVisionAnalysis_flag = mcm.OPTION_FLAG_DISABLED
         oid_SteamVisionAnalysis_flag = mcm.OPTION_FLAG_NONE
         oid_steamScreenshotDelay_flag = mcm.OPTION_FLAG_NONE
@@ -41,7 +40,7 @@ function LeftColumn(MantellaMCM mcm, MantellaRepository Repository) global
         oid_VisionHintsHotkey_flag = mcm.OPTION_FLAG_NONE
         oid_forceSkyrimVersion_flag = mcm.OPTION_FLAG_DISABLED
         oid_allowVisionDebugMode_flag = mcm.OPTION_FLAG_NONE
-    elseif SUP_SKSE.GetSUPSKSEVersion()
+    Else ;else assume it's Skyrim desktop and lists options accordingly
         oid_automaticVisionAnalysis_flag = mcm.OPTION_FLAG_NONE
         oid_SteamVisionAnalysis_flag = mcm.OPTION_FLAG_DISABLED
         oid_steamScreenshotDelay_flag = mcm.OPTION_FLAG_DISABLED
@@ -51,28 +50,18 @@ function LeftColumn(MantellaMCM mcm, MantellaRepository Repository) global
         oid_VisionHintsHotkey_flag = mcm.OPTION_FLAG_DISABLED
         oid_forceSkyrimVersion_flag = mcm.OPTION_FLAG_DISABLED
         oid_allowVisionDebugMode_flag = mcm.OPTION_FLAG_NONE
-    Else
-        oid_automaticVisionAnalysis_flag = mcm.OPTION_FLAG_DISABLED
-        oid_SteamVisionAnalysis_flag = mcm.OPTION_FLAG_NONE
-        oid_steamScreenshotDelay_flag = mcm.OPTION_FLAG_NONE
-        oid_keymapVisionHotkey_flag = mcm.OPTION_FLAG_DISABLED
-        oid_hideInterfaceDuringScreenshot_flag = mcm.OPTION_FLAG_DISABLED
-        oid_allowVisionHints_flag = mcm.OPTION_FLAG_NONE
-        oid_VisionHintsHotkey_flag = mcm.OPTION_FLAG_NONE
-        oid_forceSkyrimVersion_flag = mcm.OPTION_FLAG_DISABLED
-        oid_allowVisionDebugMode_flag = mcm.OPTION_FLAG_NONE
     endif
     
     if repository.allowVisionDebugMode 
         mcm.AddHeaderOption("Debug mode enabled")
         mcm.AddHeaderOption("Some options might not work")
     endif
-    if SUP_SKSE.GetSUPSKSEVersion()
+    if repository.currentSKversion != "1.4.15.0"
         mcm.AddHeaderOption("Enable automatic vision analysis")
     else
         mcm.AddHeaderOption("Enable vision analysis")
     endif
-    mcm.oid_automaticVisionAnalysis = mcm.AddToggleOption("Enable SUP_SKSE vision", repository.allowVision, oid_automaticVisionAnalysis_flag) 
+    mcm.oid_automaticVisionAnalysis = mcm.AddToggleOption("Enable Automatic vision analysis", repository.allowVision, oid_automaticVisionAnalysis_flag) 
     mcm.oid_SteamVisionAnalysis = mcm.AddToggleOption("Enable Steam vision", repository.allowVision, oid_SteamVisionAnalysis_flag)
     mcm.oid_steamScreenshotDelay = mcm.AddSliderOption("Select steam screenshot delay", repository.steamScreenshotDelay, "{0} seconds", oid_steamScreenshotDelay_flag)
     mcm.AddHeaderOption("Vision hotkeys and screenshot options")

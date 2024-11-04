@@ -1,6 +1,5 @@
 Scriptname MantellaVisionScript Hidden
 
-Import SUP_SKSE
 Import MiscUtil
 
 Function GenerateMantellaVision(MantellaRepository repository) global
@@ -9,10 +8,16 @@ Function GenerateMantellaVision(MantellaRepository repository) global
         if repository.allowHideInterfaceDuringScreenshot ;hide the HUD for the screenshot if this iption is enabled
             Game.SetHudCartMode()
             utility.wait(0.05)
-            SUP_SKSE.CaptureScreenshot("Mantella_Vision", 0) ;screenshots are automatically saved in the root game directory
+            SKSE_HTTP.TakeScreenshot()
+            Utility.Wait(0.3)
+            SKSE_HTTP.RenameScreenshot("MantellaVision.png") ;screenshots are automatically saved in the root game directory
+            debug.notification("Screenshot renamed to MantellaVision.png") ;Comment added to avoid user confusino when they'll get the automated notification
             Game.SetHudCartMode(false)
         else
-            SUP_SKSE.CaptureScreenshot("Mantella_Vision", 0) ;screenshots are automatically saved in the root game directory
+            SKSE_HTTP.TakeScreenshot()
+            Utility.Wait(0.3)
+            SKSE_HTTP.RenameScreenshot("MantellaVision.png") ;screenshots are automatically saved in the root game directory
+            debug.notification("Screenshot renamed to MantellaVision.png") ;Comment added to avoid user confusino when they'll get the automated notification
         endif
         if Repository.allowVisionHints
             ScanCellForActors(repository, true, true)
