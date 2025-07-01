@@ -126,6 +126,8 @@ string property KEY_CONTEXT_CUSTOMVALUES_FUNCTIONS_ENABLED = "mantella_function_
 string property KEY_CONTEXT_CUSTOMVALUES_FUNCTIONS_NPCDISPLAYNAMES = "mantella_function_npc_display_names" auto
 string property KEY_CONTEXT_CUSTOMVALUES_FUNCTIONS_NPCDISTANCES = "mantella_function_npc_distances" auto
 string property KEY_CONTEXT_CUSTOMVALUES_FUNCTIONS_NPCIDS = "mantella_function_npc_ids" auto
+string property KEY_CONTEXT_CUSTOMVALUES_ACTORS_AT_LEAST_ONE_FOLLOWER = "mantella_actors_one_follower" auto
+string property KEY_CONTEXT_CUSTOMVALUES_ACTORS_AT_LEAST_ONE_GENERIC = "mantella_actors_one_generic" auto
 
 ;;;;;;;;;;; INPUT ('Mantella Mod <- Mantella Software') ;;;;;;;;;;;;;
 

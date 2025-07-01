@@ -39,7 +39,7 @@ function RightColumn(MantellaMCM mcm, MantellaRepository Repository) global
     mcm.oid_maxFunctionCallingTargetCount = mcm.AddSliderOption("Set max number of targetable NPCs", repository.maxFunctionCallingTargetCount)   
     mcm.oid_allowExternalCustomContextUpdateEventSignaling = mcm.AddToggleOption("Enable External Context Event Checks", repository.allowExternalCustomContextUpdateEventSignaling) 
     mcm.oid_externalCustomContextEventWaitTime = mcm.AddSliderOption("Set Context Event Wait Time",repository.externalCustomContextEventWaitTime)  
-    mcm.oid_allowEventCompatibilityMode = mcm.AddToggleOption("Enable Event Compatibility mode", repository.allowEventCompatibilityMode)   
+    mcm.oid_allowEventCompatibilityMode = mcm.AddToggleOption("Enable Retro Event Compatibility mode", repository.allowEventCompatibilityMode)   
     
 endfunction
 

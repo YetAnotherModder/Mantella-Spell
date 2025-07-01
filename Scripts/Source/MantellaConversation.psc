@@ -931,6 +931,8 @@ int Function BuildCustomContextValues()
             SKSE_HTTP.setString(handleCustomContextValues, mConsts.KEY_CONTEXT_CUSTOMVALUES_FUNCTIONS_NPCDISPLAYNAMES, repository.MantellaFunctionInferenceActorNamesList)
             SKSE_HTTP.setString(handleCustomContextValues, mConsts.KEY_CONTEXT_CUSTOMVALUES_FUNCTIONS_NPCDISTANCES, repository.MantellaFunctionInferenceActorDistanceList)
             SKSE_HTTP.setString(handleCustomContextValues, mConsts.KEY_CONTEXT_CUSTOMVALUES_FUNCTIONS_NPCIDS, repository.MantellaFunctionInferenceActorIDsList)
+            SKSE_HTTP.setBool(handleCustomContextValues, mConsts.KEY_CONTEXT_CUSTOMVALUES_ACTORS_AT_LEAST_ONE_FOLLOWER, IsAtLeastOneParticipantFollowerCheck())
+            SKSE_HTTP.setBool(handleCustomContextValues, mConsts.KEY_CONTEXT_CUSTOMVALUES_ACTORS_AT_LEAST_ONE_GENERIC, IsAtLeastOneParticipantGenericCheck())
         endif  
     endif
     if repository.allowExternalCustomContextUpdateEventSignaling
@@ -1071,3 +1073,32 @@ bool Function CompareAndUpdateStoredActorPosition (Actor currentActor ) ;Checks 
     endwhile
 EndFunction
 
+bool function IsAtLeastOneParticipantFollowerCheck()
+	int i = 0
+    While i < Participants.GetSize()
+        if (Participants.GetAt(i) as Actor != playerRef)
+            Actor currentactor = Participants.GetAt(i) as Actor
+            if currentactor.IsPlayerTeammate() || (currentactor.GetRelationshipRank(PlayerRef) >= 3)
+                debug.notification("At least one participant is a follower " + currentactor.GetDisplayName())
+                return true
+            endif
+        endif
+        i += 1
+    EndWhile
+    return false
+endFunction
+
+bool function IsAtLeastOneParticipantGenericCheck()
+	int i = 0
+    While i < Participants.GetSize()
+        if (Participants.GetAt(i)as Actor != playerRef)
+            Actor currentactor = Participants.GetAt(i) as Actor
+            if !currentactor.IsPlayerTeammate() && !(currentactor.GetRelationshipRank(PlayerRef) >= 3)
+                debug.notification("At least one paticipant is a generic NPC")
+                return true
+            endif
+        endif
+        i += 1
+    EndWhile
+    return false
+endFunction

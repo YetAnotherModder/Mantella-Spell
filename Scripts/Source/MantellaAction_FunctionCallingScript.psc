@@ -8,7 +8,9 @@ MantellaConstants property mConsts auto
 MantellaConversation property conversation auto
 MantellaInterface property EventInterface Auto
 Faction Property MantellaFunctionTargetFaction Auto
-Faction Property MantellaFunctionSourceFaction Auto
+
+Faction Property MantellaFunctionSourceFaction Auto ;;Checks what kind of action a NPC is doing : 0 = waiting; 1 = moving ; 3 = looting ; 5 = following player; 6 = using magic
+
 Faction Property MantellaFunctionModeFaction Auto
 Faction Property MantellaFunctionWhoIsSourceTargeting Auto
 Quest Property MantellaLootQuest Auto 

@@ -15,13 +15,6 @@ int property oid_keymapCustomGameEventHotkey auto
 int property oid_keymapRadiantHotkey auto
 
 int property oid_showDialogueItems auto
-int property oid_enableFunctionCalling auto
-int property oid_maxFunctionCallingTargetCount auto
-int property oid_allowExternalCustomContextUpdateEventSignaling auto
-int property oid_externalCustomContextEventWaitTime auto
-int property oid_allowEventCompatibilityMode auto
-
-
 
 int property oid_radiantenabled auto
 int property oid_radiantdistance auto
@@ -96,6 +89,13 @@ int property oid_AllowForNPCtoFollowToggle auto ;gia
 int property oid_NPCAngerToggle auto ;gia
 int property oid_NPCInventoryToggle auto
 int property oid_NPCPackageToggle auto
+
+;function calling options
+int property oid_enableFunctionCalling auto
+int property oid_maxFunctionCallingTargetCount auto
+int property oid_allowExternalCustomContextUpdateEventSignaling auto
+int property oid_externalCustomContextEventWaitTime auto
+int property oid_allowEventCompatibilityMode auto
 
 int property oid_debugNPCSelectMode auto
 int property oid_restartMantellaExe Auto
@@ -247,8 +247,6 @@ Event OnOptionHighlight (Int optionID)
 
     elseIf optionID == oid_showDialogueItems	
 		SetInfoText("Show the dialogue tree entries to start a conversation or add and remove NPCs from it.")
-	elseIf optionID == oid_enableFunctionCalling	
-		SetInfoText("Enables function calling to allow for complex actions. Check the WebUI interface to pick specific LLM and options. May increase response time and token use.")
 	elseIf optionID == oid_radiantenabled
 		SetInfoText("Starts a Mantella conversation between the nearest two NPCs to the player at a given frequency. \nNPCs must both be stationary when a radiant dialogue attempt is made.")
 	elseIf optionID == oid_radiantdistance
@@ -368,7 +366,17 @@ Event OnOptionHighlight (Int optionID)
 		SetInfoText("NPCs can open their inventory to share items.")
 	elseIf optionID == oid_NPCPackageToggle
 		SetInfoText("NPCs will stop to talk to you and will not engage in non-Mantella conversations.")
-
+	elseIf optionID == oid_enableFunctionCalling	
+		SetInfoText("Enables function calling to allow for complex actions. Check the WebUI interface to pick specific LLM and options. May increase response time and token use.")
+	elseIf optionID == oid_maxFunctionCallingTargetCount	
+		SetInfoText("How many NPC target will be sent to the LLM AI. IF you notice the AI getting confused try reducing that number.")
+	elseIf optionID == oid_allowExternalCustomContextUpdateEventSignaling	
+		SetInfoText("Needs to be turned on to external scripts to receive and react to event before sending context to Mantella.exe. This may introduce some latency in the reply process (default latency 0.15 s)")
+	elseIf optionID == oid_externalCustomContextEventWaitTime	
+		SetInfoText("How long to wait before sending the custom context to Mantella.exe. Try lengthening the time if your game is running a heavy papyrus load.")
+	elseIf optionID == oid_allowEventCompatibilityMode	
+		SetInfoText("Use to allow action script that were built to be compatible with Mantella 0.13.0 or older to be used again. This cannot be used at the same time as function calling.")
+	
 	elseIf optionID == oid_debugNPCSelectMode
 		SetInfoText("Allows the player to speak to any NPC by initiating a conversation then entering the actor RefID and actor name that the player wishes to speak to")
 	elseif optionID == oid_httpPort
