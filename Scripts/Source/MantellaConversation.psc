@@ -941,6 +941,12 @@ int Function BuildCustomContextValues()
         endif  
     endif
     if repository.allowExternalCustomContextUpdateEventSignaling
+        int handle = ModEvent.Create(mConsts.KEY_SIGNAL_EXTERNAL_CUSTOM_CONTEXT_EVENT)
+        if (handle)
+            ModEvent.PushInt(handle, handleCustomContextValues)
+            ModEvent.Send(handle)
+            Utility.Wait(repository.externalCustomContextEventWaitTime)
+        endIf
         MantellaActionFunctionCallingQuest.OnExternalCustomContextEventReceived(handleCustomContextValues)
     endif
     return handleCustomContextValues
