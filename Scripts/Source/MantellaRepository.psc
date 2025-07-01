@@ -120,6 +120,9 @@ float property externalCustomContextEventWaitTime Auto
 
 event OnInit()
     assignDefaultSettings(0, true)
+    
+    ; end any existing conversation that may still be running on the Mantella server when the mod is loaded
+    (Quest.GetQuest("MantellaConversation") as MantellaConversation).EndConversation() 
 endEvent
 
 ; event OnUpdate()
@@ -356,14 +359,18 @@ Function UpdateFunctionInferenceNPCArrays(Form[] CurrentArray)
     int iindex = 0
     while (iindex < icount) && (iindex < maxFunctionCallingTargetCount)
         Actor CurrentActor = CurrentArray[iindex] as Actor
-        float currentDistance = playerRef.GetDistance(CurrentActor)
-        string currentFormID = CurrentActor.GetFormID() as string
-        MantellaFunctionInferenceActorList =  Utility.ResizeFormArray(MantellaFunctionInferenceActorList, (MantellaFunctionInferenceActorList.Length+1))
-        MantellaFunctionInferenceActorList[MantellaFunctionInferenceActorList.Length - 1] = CurrentArray[iindex] as Form
-        currentDistanceArray =  Utility.ResizeFloatArray(currentDistanceArray, (currentDistanceArray.Length+1))
-        currentDistanceArray[currentDistanceArray.Length - 1] = currentDistance
-        currentFormIDArray =  Utility.ResizeStringArray(currentFormIDArray, (currentFormIDArray.Length+1))
-        currentFormIDArray[currentFormIDArray.Length - 1] = currentDistance
+        if CurrentActor == None
+            Debug.Trace("UpdateFunctionInferenceNPCArrays: CurrentActor is None, index: " + iindex)
+        else
+            float currentDistance = playerRef.GetDistance(CurrentActor)
+            string currentFormID = CurrentActor.GetFormID() as string
+            MantellaFunctionInferenceActorList =  Utility.ResizeFormArray(MantellaFunctionInferenceActorList, (MantellaFunctionInferenceActorList.Length+1))
+            MantellaFunctionInferenceActorList[MantellaFunctionInferenceActorList.Length - 1] = CurrentArray[iindex] as Form
+            currentDistanceArray =  Utility.ResizeFloatArray(currentDistanceArray, (currentDistanceArray.Length+1))
+            currentDistanceArray[currentDistanceArray.Length - 1] = currentDistance
+            currentFormIDArray =  Utility.ResizeStringArray(currentFormIDArray, (currentFormIDArray.Length+1))
+            currentFormIDArray[currentFormIDArray.Length - 1] = currentDistance
+        endif
         iindex = iindex + 1
     endwhile
     MantellaFunctionInferenceActorNamesList=FormArrayToString(CurrentArray)
@@ -387,8 +394,10 @@ Form[] Function ScanAndReturnNearbyActorsAsForm(quest QuestForScan, bool addPlay
         ReferenceAlias CurrentAlias = QuestForScan.GetNthAlias(iindex) as ReferenceAlias
         ObjectReference CurrentActorRef = CurrentAlias.GetReference() 
         Actor currentActor = CurrentActorRef as actor
-        ActorsInCell = Utility.ResizeFormArray(ActorsInCell, ActorsInCell.Length + 1)
-        ActorsInCell[ActorsInCell.Length - 1] = CurrentActor
+        if currentActor != None
+            ActorsInCell = Utility.ResizeFormArray(ActorsInCell, ActorsInCell.Length + 1)
+            ActorsInCell[ActorsInCell.Length - 1] = CurrentActor
+        endif
         iindex = iindex + 1
         ;debug.notification("Scanned Actor : "+CurrentActor.GetDisplayName())
     endwhile

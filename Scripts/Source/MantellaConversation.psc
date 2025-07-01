@@ -2,6 +2,7 @@ Scriptname MantellaConversation extends Quest hidden
 
 Import SKSE_HTTP
 Import Utility
+Import UIExtensions
 
 Topic property MantellaDialogueLine1 auto
 Topic property MantellaDialogueLine2 auto
@@ -21,6 +22,7 @@ Faction Property MantellaFunctionSourceFaction Auto
 Faction Property MantellaFunctionModeFaction Auto
 Faction Property MantellaFunctionWhoIsSourceTargeting Auto
 Spell property MantellaFunctionDummySpell auto
+MantellaAction_FunctionCallingScript Property MantellaActionFunctionCallingQuest Auto
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;           Globals           ;
@@ -68,6 +70,7 @@ Function RegisterForConversationEvents()
     RegisterForModEvent(EventInterface.EVENT_ACTIONS_PREFIX + mConsts.ACTION_ENDCONVERSATION,"OnEndConversationActionReceived")
     RegisterForModEvent(EventInterface.EVENT_ACTIONS_PREFIX + mConsts.ACTION_REMOVECHARACTER,"OnRemoveCharacterActionReceived")
     RegisterForModEvent(EventInterface.EVENT_ADD_EVENT,"OnAddEventReceived")
+    MantellaActionFunctionCallingQuest = Quest.GetQuest("MantellaAction_FunctionCalling") as MantellaAction_FunctionCallingScript
 EndFunction
 
 event OnUpdate()
@@ -394,7 +397,7 @@ Function CleanupConversation()
     int i = 0
     ClearParticipants()
     ClearRepeatingMessage()
-    _ingameEvents = None
+    _ingameEvents = Utility.CreateStringArray(0)
     _does_accept_player_input = false
     _isTalking = false
     _lastNpcToSpeak = None
@@ -567,14 +570,16 @@ Function RaiseActionEvent(Actor speaker, string[] actions, int MantellaExeHandle
         if extraAction == mConsts.KEY_REQUESTTYPE_ENDCONVERSATION
             EndConversation()
         else
-            int handle = ModEvent.Create(EventInterface.EVENT_ACTIONS_PREFIX + extraAction)
+            string fullEventName = EventInterface.EVENT_ACTIONS_PREFIX + extraAction
+            int handle = ModEvent.Create(fullEventName)
             if (handle)
                 ModEvent.PushForm(handle, speaker)
                 if repository.allowFunctionCalling && !repository.allowEventCompatibilityMode
                     ModEvent.PushInt(handle, MantellaExeHandle)
                 endif
                 ModEvent.Send(handle)
-                debug.notification("Sending out Event: "+EventInterface.EVENT_ACTIONS_PREFIX + extraAction)
+            else
+                debug.notification("Failed to create event: " + fullEventName)
             endIf 
         endIf
         i += 1
@@ -841,7 +846,7 @@ Function AddCurrentActorsAndContext(int handleToAddTo, bool isConversationStart 
     SKSE_HTTP.setNestedDictionary(handleToAddTo, mConsts.KEY_CONTEXT, _contextHandle)
 EndFunction
 
-int[] function BuildNpcsInConversationArray()
+function BuildNpcsInConversationArray()
     _actorHandles =  Utility.CreateIntArray(Participants.GetSize())
     int i = 0
     While i < Participants.GetSize()
@@ -851,7 +856,7 @@ int[] function BuildNpcsInConversationArray()
     _actorsUpdated = true
 endFunction
 
-int[] function UpdateNpcsInConversationArray()
+function UpdateNpcsInConversationArray()
     ; Update NPC details where variables are dynamic
     int i = 0
     While i < Participants.GetSize()
@@ -897,10 +902,10 @@ Function AddCustomPCValues(int customActorValuesHandle, Actor actorToBuildCustom
     endIf
 EndFunction
 
-int function BuildContext(bool isConversationStart = false)
+function BuildContext(bool isConversationStart = false)
     _contextHandle = SKSE_HTTP.createDictionary()
     if (isConversationStart)
-        _location = ((Participants.GetAt(0) as Actor).GetCurrentLocation() as Form).getName()
+        _location = (Game.GetPlayer().GetCurrentLocation() as Form).getName()
         if _location == ""
             _location = "Skyrim"
         endIf
@@ -936,17 +941,12 @@ int Function BuildCustomContextValues()
         endif  
     endif
     if repository.allowExternalCustomContextUpdateEventSignaling
-        int handle = ModEvent.Create(mConsts.KEY_SIGNAL_EXTERNAL_CUSTOM_CONTEXT_EVENT)
-        if (handle)
-            ModEvent.PushInt(handle, handleCustomContextValues)
-            ModEvent.Send(handle)
-            Utility.Wait(repository.externalCustomContextEventWaitTime)
-        endIf
+        MantellaActionFunctionCallingQuest.OnExternalCustomContextEventReceived(handleCustomContextValues)
     endif
     return handleCustomContextValues
 EndFunction
 
-int function AddCurrentWeather(int contextHandle)
+function AddCurrentWeather(int contextHandle)
     If (!PlayerRef.IsInInterior())
         int handle = SKSE_HTTP.createDictionary()
         Weather currentWeather = Weather.GetCurrentWeather()
@@ -997,9 +997,10 @@ EndFunction
 function UpdateCurrentFunctionTarget(form[] SourcesWhoAreTargeting, actor ActorToInsert)
     
     ;Clearing the currentFunctionTarget from all factions before putting in a new ref
-    CurrentFunctionTargetArray[CurrentFunctionTargetPointer] 
-    CurrentFunctionTargetArray[CurrentFunctionTargetPointer].SetFactionRank(MantellaFunctionTargetFaction,-2)
-    CurrentFunctionTargetArray[CurrentFunctionTargetPointer].RemoveFromFaction(MantellaFunctionTargetFaction)
+    if CurrentFunctionTargetArray != None && CurrentFunctionTargetArray.Length > CurrentFunctionTargetPointer && CurrentFunctionTargetArray[CurrentFunctionTargetPointer] != None
+        CurrentFunctionTargetArray[CurrentFunctionTargetPointer].SetFactionRank(MantellaFunctionTargetFaction,-2)
+        CurrentFunctionTargetArray[CurrentFunctionTargetPointer].RemoveFromFaction(MantellaFunctionTargetFaction)
+    endif
     ;Updating the new ref for the new function target
     int i = 0
     actor sourceActor
