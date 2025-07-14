@@ -480,6 +480,7 @@ function GetPlayerTextInput()
         repository.resetFunctionInferenceNPCArrays()
         repository.UpdateFunctionInferenceNPCArrays(repository.GetFunctionInferenceActorList())
     endif
+    BuildContext() ; Kept in as it's the last checkpoint to ensure the most up to date info is sent to the LLM
 
     UIExtensions.InitMenu("UITextEntryMenu")
     UIExtensions.OpenMenu("UITextEntryMenu")
