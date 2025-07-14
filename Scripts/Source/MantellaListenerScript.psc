@@ -86,7 +86,7 @@ event OnUpdate()
 
                     ;TODO: make distanceBetweenActors customisable
                     if (distanceBetweenActors <= 1000)
-                        ;have spell casted on Actor 1 by Actor 2
+                        ;have spell cast on Actor 1 by Actor 2
                         MantellaSpell.Cast(Actor2 as ObjectReference, Actor1 as ObjectReference)
                     elseif(repository.showRadiantDialogueMessages)
                         Debug.Notification("Radiant dialogue attempted. No NPCs available")
@@ -112,15 +112,13 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
         string itemName = akBaseItem.GetName()
         string itemCount = ""
         if itemName == "gold" ; only count the number of items if it is gold
-            itemCount = aiItemCount+" "
+            itemCount = aiItemCount + " "
         endIf
-        string itemPickedUpMessage = getPlayerName() + " picked up / took " + itemCount + itemName 
-
         string sourceName = ""
-        if akSourceContainer != None ; 
-            sourceName = " from" + akSourceContainer.getbaseobject().getname()
+        if akSourceContainer != None ; if the source container is a container, not an actor
+            sourceName = " from " + akSourceContainer.getdisplayname()
         endif
-        itemPickedUpMessage = getPlayerName() + " picked up / took " + itemCount + itemName + sourceName                 
+        string itemPickedUpMessage = getPlayerName() + " picked up/took " + itemCount + itemName + sourceName                 
         if itemName != "Iron Arrow" ; Papyrus hallucinates iron arrows
             ;Debug.MessageBox(itemPickedUpMessage)
             AddIngameEventToConversation(itemPickedUpMessage)
@@ -134,17 +132,13 @@ Event OnItemRemoved(Form akBaseItem, int aiItemCount, ObjectReference akItemRefe
         string itemName = akBaseItem.GetName()
         string itemCount = ""
         if itemName == "gold" ; only count the number of items if it is gold
-            itemCount = aiItemCount+" "
+            itemCount = aiItemCount + " "
         endIf
-        string itemDroppedMessage = getPlayerName() + " dropped " + itemCount + itemName 
-
         string destName = ""
         if akDestContainer != None
-            destName = " in/on/to " + akDestContainer.getbaseobject().getname()
+            destName = " in/on/to " + akDestContainer.getdisplayname()
         endif
-
-        itemDroppedMessage = getPlayerName() + " dropped " + itemCount + itemName + destName
-        
+        string itemDroppedMessage = getPlayerName() + " dropped/gave " + itemCount + itemName + destName      
         if itemName != "Iron Arrow" ; Papyrus hallucinates iron arrows
             ;Debug.MessageBox(itemDroppedMessage)
             AddIngameEventToConversation(itemDroppedMessage)
@@ -158,8 +152,8 @@ Event OnSpellCast(Form akSpell)
         string spellCast = (akSpell as form).getname()
         if spellCast 
             if (spellCast != "Mantella") && (spellCast != "Mantella Remove NPC") && (spellCast != "Mantella End Conversation")
-                ;Debug.Notification("The player casted the spell "+ spellCast)
-                AddIngameEventToConversation(getPlayerName() + " casted the spell / consumed " + spellCast )
+                ;Debug.Notification("The player cast the spell "+ spellCast)
+                AddIngameEventToConversation(getPlayerName() + " cast the spell / consumed " + spellCast )
             endIf
         endIf
     endif

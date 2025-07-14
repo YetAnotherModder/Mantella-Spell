@@ -254,8 +254,9 @@ function RequestContinueConversation()
         if repository.allowFunctionCalling
             repository.resetFunctionInferenceNPCArrays()
             repository.UpdateFunctionInferenceNPCArrays(repository.GetFunctionInferenceActorList())
-            BuildContext() ;Find a more elegant way to do this
         endif
+        BuildContext() ;Find a more elegant way to do this
+        SKSE_HTTP.setNestedDictionary(handle, mConsts.KEY_CONTEXT, _contextHandle)
         SKSE_HTTP.sendLocalhostHttpRequest(handle, repository.HttpPort, mConsts.HTTP_ROUTE_MAIN)
     EndIf
 endFunction
@@ -348,8 +349,12 @@ function NpcSpeak(Actor actorSpeaking, string lineToSay, Topic topicToUse, bool 
     ; Debug.Trace((Utility.GetCurrentRealTime() - httpReceivedTime) + " seconds to start speaking", 2)
     If (!isSpokenByNarrator)
         Actor NpcToLookAt = GetNpcToLookAt(actorSpeaking, _lastNpcToSpeak)
-        actorSpeaking.SetLookAt(NpcToLookAt)
-        NpcToLookAt.SetLookAt(actorSpeaking)
+        if NpcToLookAt == None
+            Debug.Trace("NpcSpeak: error NpcToLookAt is None, actorSpeaking is " + actorSpeaking.GetDisplayName())
+        else
+            actorSpeaking.SetLookAt(NpcToLookAt)
+            NpcToLookAt.SetLookAt(actorSpeaking)
+        endIf
     Else
         ; Narrations do not have an actor to apply the IsTalking spell to, so a wait time needs to be forced here
         Utility.Wait(lineDuration)
@@ -445,8 +450,8 @@ function sendRequestForPlayerInput(string playerInput, bool updateContext)
                 repository.UpdateFunctionInferenceNPCArrays(repository.GetFunctionInferenceActorList())
             endif
             BuildContext()
+            SKSE_HTTP.setNestedDictionary(handle, mConsts.KEY_CONTEXT, _contextHandle)
         endIf
-        SKSE_HTTP.setNestedDictionary(handle, mConsts.KEY_CONTEXT, _contextHandle)
 
         SKSE_HTTP.sendLocalhostHttpRequest(handle, repository.HttpPort, mConsts.HTTP_ROUTE_MAIN)
     EndIf
@@ -475,8 +480,6 @@ function GetPlayerTextInput()
         repository.resetFunctionInferenceNPCArrays()
         repository.UpdateFunctionInferenceNPCArrays(repository.GetFunctionInferenceActorList())
     endif
-    BuildContext()
-    
 
     UIExtensions.InitMenu("UITextEntryMenu")
     UIExtensions.OpenMenu("UITextEntryMenu")
@@ -920,6 +923,13 @@ function BuildContext(bool isConversationStart = false)
         _initialTime = GetCurrentHourOfDay()
     endIf
     SKSE_HTTP.setInt(_contextHandle, mConsts.KEY_CONTEXT_TIME, _initialTime)
+
+    int configSettingsHandle = SKSE_HTTP.createDictionary()
+    SKSE_HTTP.setBool(configSettingsHandle, mConsts.KEY_CONTEXT_CONFIG_SETTINGS_NPC_ANGER, repository.NPCAnger)
+    SKSE_HTTP.setBool(configSettingsHandle, mConsts.KEY_CONTEXT_CONFIG_SETTINGS_NPC_INVENTORY, repository.NPCInventory)
+    SKSE_HTTP.setBool(configSettingsHandle, mConsts.KEY_CONTEXT_CONFIG_SETTINGS_NPC_PACKAGE, repository.NPCPackage)
+    SKSE_HTTP.setBool(configSettingsHandle, mConsts.KEY_CONTEXT_CONFIG_SETTINGS_NPC_FOLLOW, repository.AllowForNPCtoFollow)
+    SKSE_HTTP.setNestedDictionary(_contextHandle, mConsts.KEY_CONTEXT_CONFIG_SETTINGS, configSettingsHandle)
 
     string[] past_events = deepcopy(_ingameEvents)
     SKSE_HTTP.setStringArray(_contextHandle, mConsts.KEY_CONTEXT_INGAMEEVENTS, past_events)
